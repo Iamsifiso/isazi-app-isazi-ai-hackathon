@@ -59,12 +59,16 @@ export const SpeakScreen = () => {
   const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [emergencyWhatsAppContact, setEmergencyWhatsAppContact] = useState('');
+  const [isConfigureWhatsApp, setIsConfigureWhatsApp] = useState(false);
+  const [tempWhatsAppContact, setTempWhatsAppContact] = useState('');
 
   // Load saved phrases and recent from localStorage
   useEffect(() => {
     const savedPhrases = localStorage.getItem('izwi-phrases');
     const savedRecent = localStorage.getItem('izwi-recent-phrases');
     const savedCustomCategories = localStorage.getItem('izwi-custom-categories');
+    const savedWhatsAppContact = localStorage.getItem('izwi-emergency-whatsapp');
 
     if (savedPhrases) {
       setPhrases(JSON.parse(savedPhrases));
@@ -79,6 +83,10 @@ export const SpeakScreen = () => {
 
     if (savedCustomCategories) {
       setCustomCategories(JSON.parse(savedCustomCategories));
+    }
+
+    if (savedWhatsAppContact) {
+      setEmergencyWhatsAppContact(savedWhatsAppContact);
     }
   }, []);
 
@@ -233,6 +241,35 @@ export const SpeakScreen = () => {
     updateUserData({ selectedLanguage: newLang });
   };
 
+  const handleOpenWhatsAppConfig = () => {
+    setTempWhatsAppContact(emergencyWhatsAppContact);
+    setIsConfigureWhatsApp(true);
+  };
+
+  const handleSaveWhatsAppContact = () => {
+    const cleanedNumber = tempWhatsAppContact.replace(/\D/g, '');
+    setEmergencyWhatsAppContact(cleanedNumber);
+    localStorage.setItem('izwi-emergency-whatsapp', cleanedNumber);
+    setIsConfigureWhatsApp(false);
+  };
+
+  const handleOpenWhatsApp = () => {
+    if (!emergencyWhatsAppContact) {
+      alert('Please configure emergency WhatsApp contact first');
+      handleOpenWhatsAppConfig();
+      return;
+    }
+
+    const emergencyMessage = currentLanguage === 'af-ZA'
+      ? 'NOODGEVAL! Ek het dringend hulp nodig. Asseblief help my!'
+      : 'EMERGENCY! I need urgent help. Please assist me!';
+
+    const encodedMessage = encodeURIComponent(emergencyMessage);
+    const whatsappUrl = `https://wa.me/${emergencyWhatsAppContact}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+  };
+
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     setIsAddingPhrase(false); // Close add phrase mode when switching categories
@@ -302,6 +339,28 @@ export const SpeakScreen = () => {
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
           </svg>
           <span>EMERGENCY</span>
+        </button>
+
+        <button
+          className="whatsapp-emergency-btn"
+          onClick={handleOpenWhatsApp}
+          title={emergencyWhatsAppContact ? 'Send emergency WhatsApp' : 'Configure emergency contact'}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          <span>WhatsApp</span>
+        </button>
+
+        <button
+          className="config-whatsapp-btn"
+          onClick={handleOpenWhatsAppConfig}
+          title="Configure emergency WhatsApp contact"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
         </button>
       </div>
 
@@ -572,6 +631,46 @@ export const SpeakScreen = () => {
       <div className="bottom-indicator">
         <div className="home-indicator"></div>
       </div>
+
+      {/* WhatsApp Configuration Modal */}
+      {isConfigureWhatsApp && (
+        <div className="modal-overlay" onClick={() => setIsConfigureWhatsApp(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Configure Emergency WhatsApp</h3>
+              <button className="modal-close-btn" onClick={() => setIsConfigureWhatsApp(false)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              <p className="modal-description">
+                Enter your emergency contact's WhatsApp number (with country code).
+                <br />
+                Example: 27812345678 (for South Africa)
+              </p>
+              <input
+                type="tel"
+                className="whatsapp-input"
+                placeholder="e.g. 27812345678"
+                value={tempWhatsAppContact}
+                onChange={(e) => setTempWhatsAppContact(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setIsConfigureWhatsApp(false)}>
+                Cancel
+              </button>
+              <button className="btn-save" onClick={handleSaveWhatsAppContact}>
+                Save Contact
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
