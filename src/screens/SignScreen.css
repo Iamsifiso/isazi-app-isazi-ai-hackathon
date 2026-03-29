@@ -32,6 +32,8 @@
   position: relative;
   z-index: 1;
   padding: 20px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .animation-container {
@@ -41,6 +43,21 @@
   gap: 20px;
   width: 100%;
   max-width: 500px;
+}
+
+.lottie-wrapper {
+  width: 350px;
+  height: 350px;
+  max-width: 90vw;
+  max-height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 
 .phrase-label {
@@ -102,7 +119,7 @@
   flex-direction: column;
   gap: 12px;
   position: relative;
-  z-index: 2;
+  z-index: 10;
   background: linear-gradient(
     to top,
     var(--bg-deep) 0%,
@@ -110,6 +127,8 @@
     transparent 100%
   );
   padding-top: 40px;
+  pointer-events: auto;
+  flex-shrink: 0;
 }
 
 .phrases-header {
@@ -153,6 +172,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: var(--transition);
   min-height: 100px;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .phrase-card:hover:not(:disabled) {
@@ -216,6 +237,11 @@
   .sign-bottom {
     padding: 16px 16px 0;
   }
+
+  .lottie-wrapper {
+    width: 300px;
+    height: 300px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -234,5 +260,14 @@
 
   .phrase-text {
     font-size: 13px;
+  }
+
+  .lottie-wrapper {
+    width: 280px;
+    height: 280px;
+  }
+
+  .sign-animation-area {
+    padding: 10px;
   }
 }

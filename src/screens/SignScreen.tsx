@@ -3,47 +3,32 @@ import Lottie from 'lottie-react';
 import { useApp } from '../contexts/AppContext';
 import './SignScreen.css';
 
+// Import Lottie animations
+import helloAnimation from '../assets/animations/hello.json';
+import yesAnimation from '../assets/animations/yes.json';
+import thankYouAnimation from '../assets/animations/thank-you.json';
+
 interface SignPhrase {
   id: string;
   text: string;
   animationData: any; // Lottie JSON animation data
 }
 
-// Placeholder - Replace these imports with actual Lottie JSON files
-// Import your Lottie animations here like:
-// import helloAnimation from '../assets/animations/hello.json';
-// import myNameIsAnimation from '../assets/animations/my-name-is.json';
-
 const signPhrases: SignPhrase[] = [
   {
     id: 'hello',
     text: 'Hello',
-    animationData: null, // Replace with: helloAnimation
-  },
-  {
-    id: 'my-name-is',
-    text: 'My name is',
-    animationData: null, // Replace with: myNameIsAnimation
+    animationData: helloAnimation,
   },
   {
     id: 'yes',
     text: 'Yes',
-    animationData: null, // Replace with: yesAnimation
-  },
-  {
-    id: 'no',
-    text: 'No',
-    animationData: null, // Replace with: noAnimation
+    animationData: yesAnimation,
   },
   {
     id: 'thank-you',
     text: 'Thank you',
-    animationData: null, // Replace with: thankYouAnimation
-  },
-  {
-    id: 'please',
-    text: 'Please',
-    animationData: null, // Replace with: pleaseAnimation
+    animationData: thankYouAnimation,
   },
 ];
 
@@ -105,12 +90,14 @@ export const SignScreen = () => {
       <div className="sign-animation-area">
         {selectedPhrase && selectedPhrase.animationData ? (
           <div className="animation-container">
-            <Lottie
-              animationData={selectedPhrase.animationData}
-              loop={false}
-              autoplay={isPlaying}
-              style={{ width: '100%', maxWidth: '400px', height: 'auto' }}
-            />
+            <div className="lottie-wrapper">
+              <Lottie
+                animationData={selectedPhrase.animationData}
+                loop={true}
+                autoplay={isPlaying}
+                style={{ width: '100%', height: '100%' }}
+              />
+            </div>
             <div className="phrase-label">{selectedPhrase.text}</div>
             <button className="replay-btn" onClick={handleReplay}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
