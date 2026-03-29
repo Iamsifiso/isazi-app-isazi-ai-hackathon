@@ -183,6 +183,98 @@ export const translations = {
     gesturePrevious: 'Terug',
     select: 'Kies',
   },
+  'zu': {
+    // Splash & Welcome
+    appName: 'IZWI',
+    tagline: 'Izwi lakho. Ake ngikhulume ngawe.',
+    welcome: 'Siyakwamukela.',
+    swipeRightVoice: 'Swayiphela kwesokudla ukuze uthole imodi yokuqondiswa ngezwi.',
+    swipeLeftVisual: 'Swayiphela kwesokunxele ukuze uthole imodi yokubona.',
+    selectMode: 'KHETHA INDLELA YOKUXHUMANA',
+
+    // Onboarding
+    whatIsYourName: 'Ubani igama lakho?',
+    nameSubtext: 'I-IZWI isebenzisa lokhu ukuze yakhe izwi lakho lomsizi.',
+    enterName: 'Faka igama lakho',
+    next: 'Okulandelayo',
+    back: 'Emuva',
+
+    // Medical
+    medicalQuestion: 'Ingabe unezimo ezithile zempilo?',
+    medicalSubtext: 'Inikeza i-IZWI umongo ezimweni eziphuthumayo.',
+    diabetic: 'Usifo sikashukela',
+    highBloodPressure: 'Umfutho Omkhulu Wegazi',
+    epilepsy: 'Isifo sokugogoda',
+    asthma: 'Isifuba',
+    heartCondition: 'Isimo Senhliziyo',
+    allergies: 'Ama-allergy',
+    other: 'Okunye',
+    describeCondition: 'Chaza isimo sakho...',
+    speak: 'KHULUMA',
+
+    // Home
+    hiUser: (name: string) => `Sawubona ${name}, ngingakusiza kanjani namuhla?`,
+    assistantActive: 'UMSIZI USEBENZA',
+    chooseInteraction: 'Khetha indlela yakho yokuxhumana',
+    needToSpeak: 'Ngidinga ukukhuluma',
+    voiceConversion: 'Ukuguqula izwi',
+    needToSee: 'Ngidinga ukubona',
+    aiSceneAnalysis: 'Ukuhlaziywa Kwesigcawu nge-AI',
+    visionVoiceActive: 'I-VisionVoice 2.0 manje iyasebenza',
+    learnMore: 'Funda Kabanzi',
+    listeningForGestures: 'KULULELA IZENZO',
+
+    // Speak Screen
+    whatToSay: 'Ufuna ukuthini?',
+    quickPhrases: 'IMISHO ESHESHAYO',
+    typeToBegin: 'THAYIPHA UKUZE UQALE',
+    typeMessage: 'Thayipha umlayezo wakho...',
+    hello: 'Sawubona',
+    howAreYou: 'Unjani?',
+    thankYou: 'Ngiyabonga',
+    needHelp: 'Ngidinga usizo',
+    pleaseWait: 'Sicela ulinde',
+    callSomeone: 'Shayela othile',
+    recent: 'Muva nje',
+    settings: 'Izilungiselelo',
+
+    // See Screen
+    visionVoice: 'I-IZWI VisionVoice',
+    visionMode: 'IMODI YOKUBONA',
+    seeWorldTagline: '"Bona umhlaba, uzwe indaba yawo."',
+    howToUse: 'Indlela yokusebenzisa:',
+    howToUseText: 'Thepha Qala Ikhamera ukuze uqale, bese uthepha Rekhoda ukuze uthwebe, bese uthepha Hlaziya ukuze uthole imiphumela.',
+    languageSelection: 'UKUKHETHA ULIMI',
+    cameraNotStarted: 'Ikhamera ayiqaliwe',
+    cameraActive: 'Ikhamera Iyasebenza',
+    startCamera: 'Qala Ikhamera',
+    record: 'Rekhoda',
+    stopRecording: 'Misa',
+    analyzeSurroundings: 'Hlaziya Indawo Yami',
+    analyzing: 'Iyahlaziya...',
+    recordingFrames: 'Iyarekhoda...',
+
+    // Languages
+    english: 'IsiNgisi',
+    afrikaans: 'Afrikaans',
+    isiZulu: 'isiZulu',
+    isiXhosa: 'isiXhosa',
+    sesotho: 'Sesotho',
+    setswana: 'Setswana',
+    sepedi: 'Sepedi',
+    tshivenda: 'Tshivenḓa',
+    xitsonga: 'Xitsonga',
+    siswati: 'siSwati',
+    isindebele: 'isiNdebele',
+
+    // Gestures
+    swipeRight: 'Swayiphela Kwesokudla ukuze',
+    swipeLeft: 'Swayiphela Kwesokunxele ukuze',
+    doubleTap: 'Thepha Kabili ukuze',
+    gestureNext: 'Okulandelayo',
+    gesturePrevious: 'Emuva',
+    select: 'Khetha',
+  },
 };
 
 export type TranslationKey = keyof typeof translations['en-ZA'];

@@ -15,6 +15,7 @@ interface Language {
 const languages: Language[] = [
   { id: 'en-ZA', name: 'English', native: 'SA' },
   { id: 'af', name: 'Afrikaans', native: 'Afr' },
+  { id: 'zu', name: 'isiZulu', native: 'Zulu' },
 ];
 
 export const SeeScreen = () => {
@@ -54,10 +55,10 @@ export const SeeScreen = () => {
   };
 
   const speakFeedback = async (text: string) => {
-    // Use Google TTS for Afrikaans, Web Speech API for English
-    if (selectedLang === 'af') {
+    // Use Google TTS for Afrikaans and Zulu, Web Speech API for English
+    if (selectedLang === 'af' || selectedLang === 'zu') {
       try {
-        const audioContent = await api.googleTextToSpeech(text, 'af');
+        const audioContent = await api.googleTextToSpeech(text, selectedLang);
         await api.playAudio(audioContent);
       } catch (error) {
         console.error('Google TTS error:', error);
@@ -65,7 +66,7 @@ export const SeeScreen = () => {
         if (window.speechSynthesis) {
           window.speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = selectedLang;
+          utterance.lang = selectedLang === 'zu' ? 'zu-ZA' : selectedLang;
           utterance.rate = 0.95;
           window.speechSynthesis.speak(utterance);
         }
@@ -88,6 +89,8 @@ export const SeeScreen = () => {
       speakFeedback(
         selectedLang === 'af'
           ? 'Kamera is gestop.'
+          : selectedLang === 'zu'
+          ? 'Ikhamera imisiwe.'
           : 'Camera stopped.'
       );
     } else {
@@ -98,6 +101,8 @@ export const SeeScreen = () => {
           speakFeedback(
             selectedLang === 'af'
               ? 'Kamera is gereed. Tik Neem op om jou omgewing vas te vang.'
+              : selectedLang === 'zu'
+              ? 'Ikhamera isilungele. Thepha Rekhoda ukuze uthwebe indawo yakho.'
               : 'Camera is ready. Tap Record to capture your surroundings.'
           );
         }
@@ -112,6 +117,8 @@ export const SeeScreen = () => {
         speakFeedback(
           selectedLang === 'af'
             ? `${capturedFrames.length} rame vasgevang. Tik Analiseer My Omgewing.`
+            : selectedLang === 'zu'
+            ? `${capturedFrames.length} amafremu athunyelwe. Thepha Hlaziya Indawo Yami.`
             : `${capturedFrames.length} frames captured. Tap Analyze My Surroundings.`
         );
       }, 300);
@@ -123,6 +130,8 @@ export const SeeScreen = () => {
       speakFeedback(
         selectedLang === 'af'
           ? 'Opname begin. Beweeg die kamera stadig rond jou omgewing.'
+          : selectedLang === 'zu'
+          ? 'Ukurekhoda kuqalile. Jikelezisa ikhamera kancane endaweni yakho.'
           : 'Recording started. Pan the camera slowly around your surroundings.'
       );
     }
@@ -144,6 +153,8 @@ export const SeeScreen = () => {
     if (!apiKey) {
       const errorMsg = selectedLang === 'af'
         ? 'API sleutel nie gekonfigureer nie'
+        : selectedLang === 'zu'
+        ? 'Ukhiye we-API awulungiselwanga'
         : 'API key not configured';
       setError(errorMsg);
       speakFeedback(errorMsg);
@@ -151,19 +162,24 @@ export const SeeScreen = () => {
     }
 
     if (capturedFrames.length === 0) {
-      setError('No frames captured. Please record first.');
-      speakFeedback(
-        selectedLang === 'af'
-          ? 'Geen rame vasgevang nie. Neem asseblief eerste op.'
-          : 'No frames captured. Please record first.'
-      );
+      const errorMsg = selectedLang === 'af'
+        ? 'Geen rame vasgevang nie. Neem asseblief eerste op.'
+        : selectedLang === 'zu'
+        ? 'Awekho amafremu athunyelwe. Sicela urekhode kuqala.'
+        : 'No frames captured. Please record first.';
+      setError(errorMsg);
+      speakFeedback(errorMsg);
       return;
     }
 
     setIsAnalyzing(true);
     setError('');
     speakFeedback(
-      selectedLang === 'af' ? 'Besig om te analiseer. Wag asseblief.' : 'Analyzing. Please wait.'
+      selectedLang === 'af'
+        ? 'Besig om te analiseer. Wag asseblief.'
+        : selectedLang === 'zu'
+        ? 'Iyahlaziya. Sicela ulinde.'
+        : 'Analyzing. Please wait.'
     );
 
     try {
@@ -181,8 +197,10 @@ export const SeeScreen = () => {
       });
 
       // Add prompt in selected language
-      const prompt = selectedLang === 'af'
-        ? `Jy is 'n toeganklikheidsassistent wat 'n blinde of visueel gestremde persoon help om hul omgewing te verstaan deur beelde wat van hul toestel vasgevang is.
+      let prompt: string;
+
+      if (selectedLang === 'af') {
+        prompt = `Jy is 'n toeganklikheidsassistent wat 'n blinde of visueel gestremde persoon help om hul omgewing te verstaan deur beelde wat van hul toestel vasgevang is.
 
 Hierdie ${selectedFrames.length} beelde is in vinnige opeenvolging vasgevang van 'n enkele kandering.
 
@@ -238,8 +256,67 @@ Algemene reëls:
 - Wees bondig maar insiggewend (mik vir 100-150 woorde, langer vir spyskaarte/dokumente indien nodig)
 - Wees ruimtelik duidelik en rigtinggewend wanneer omgewings beskryf word
 - Begin direk met die beskrywing (geen inleiding soos "Ek kan sien..." of "Dit blyk te wees..." nie)
-- As teks in 'n ander taal as Afrikaans is, noem die taal`
-        : `You are an accessibility assistant helping a blind or visually impaired person understand their surroundings through images captured from their device.
+- As teks in 'n ander taal as Afrikaans is, noem die taal`;
+      } else if (selectedLang === 'zu') {
+        prompt = `Wena ungumsizi wokufinyelela osiza umuntu oyisiphofu noma onenkinga yokubona ukuba aqonde indawo yakhe ngezithombe ezithunyelwe kusukela kudivayisi yakhe.
+
+Lezi zithombe ezingu-${selectedFrames.length} zithathwe ngokushesha ngokulandelana kusukela ekuskeningi okukodwa.
+
+Okokuqala, nquma umongo onamathuba amaningi:
+- Indawo evamile/izindawo
+- Imenyu yokudla noma uhlu lwezintengo
+- Imithi, ilebula yomkhiqizo, noma ukupakisha
+- Idokhumenti, ifomu, noma umbhalo oprintiwe
+- Izimpawu noma ulwazi lokuqondisa
+- Okunye noma akucaci
+
+Bese uphendula ngokufanelekile:
+
+1) Uma kuyindawo evamile:
+- Chaza uhlobo lwendawo (ngaphakathi/ngaphandle, uhlobo lwegumbi, indawo)
+- Chaza izinto ezibalulekile nezikhundla zazo (kwesokunxele, kwesokudla, phambili, eduze, kude)
+- Yisho noma yibaphi abantu abakhona
+- BEKA KUQALA izingozi (izinyathelo, izithiyo, umhlabathi ongalingani, izinqenqema ezibukhali, iminyango evuliwe, ithrafikhi, izibhakabhaka ezimanzi, njll.)
+- Yisho noma yiziphi izimpawu ezifundekayo noma umbhalo obalulekile
+
+2) Uma kuyimenyu noma uhlu lwezintengo:
+- Funda zonke izinto ezibonakala ngokucacile
+- Faka izintengo uma zibonakala
+- Hlanganisa izinto ngendlela enengqondo (isb., iziqalo, izidlo ezinkulu, iziphuzo, amadisidi)
+- Yisho noma iziphi iziphakamiso ezikhethekile noma amanothi
+- Kungaba neside uma kudingeka ukuze kuphelelise
+
+3) Uma kuyimithi noma umkhiqizo:
+- Funda igama lomkhiqizo ngokucacile
+- Funda umthamo, amandla, noma ubukhulu
+- Funda imiyalelo yokusetshenziswa uma ibonakala
+- GQAMISA noma iziphi izixwayiso noma izilumkiso
+- Yisho usuku lokuphelelwa uma lubonakala
+
+4) Uma kuyidokhumenti noma ifomu:
+- Hlonza uhlobo lwedokhumenti (i-akhawunti, incwadi, ifomu, njll.)
+- Funda ulwazi olubalulekile nezihloko
+- Yisho noma yiziphi izingxenye ezidinga ukunakwa noma ukusayina
+- Qaphela uma izingxenye zingacacile noma zisikiwe
+
+5) Uma kuyizimpawu noma imikhombandlela:
+- Funda umlayezo omkhulu ngokucacile
+- Khombisa indlela uma ikhonjisiwe (imicibisholo, kwesokunxele/kwesokudla)
+- Yisho noma yiziphi izimpawu noma ama-ayikhoni
+- Qaphela ibanga noma ulwazi lwendawo uma lukhona
+
+6) Uma okuqukethwe kungacacile noma kungafundeki:
+- Yisho ukuthi izithombe ziyindunduma kakhulu, zimnyama, noma zikude kakhulu ukuze zifundeke ngokucacile
+- Phakamisa ngobumnene ukuthatha okuseduzane, okuzinzile, noma okukhanyisiwe kangcono
+
+Imithetho evamile:
+- Khuluma ngokwemvelo njengokuthi ukhuluma ncamashi nomsebenzisi
+- Yiba mfushane kodwa unikeze ulwazi (heha kuya ku-100-150 amagama, neside kumamenu/amadokhumenti uma kudingeka)
+- Yiba ucace ngendawo futhi uqondise lapho uchaza izindawo
+- Qala ngqo ngencazelo (akukho sihlahla njengokuthi "Ngiyabona..." noma "Kubonakala kuyinto...")
+- Uma umbhalo ungolimi olungeyona isiZulu, yisho ulimi`;
+      } else {
+        prompt = `You are an accessibility assistant helping a blind or visually impaired person understand their surroundings through images captured from their device.
 
 These ${selectedFrames.length} images were captured in quick succession from a single scan.
 
@@ -296,6 +373,7 @@ General rules:
 - Be spatially clear and directional when describing environments
 - Start directly with the description (no preamble like "I can see..." or "This appears to be...")
 - If text is in a language other than English, mention the language`;
+      }
 
       content.push({
         type: 'text',
@@ -328,18 +406,18 @@ General rules:
 
       setAnalysisResult(text);
 
-      // Auto-speak the result - use Google TTS for Afrikaans, Web Speech API for English
+      // Auto-speak the result - use Google TTS for Afrikaans and Zulu, Web Speech API for English
       setIsSpeaking(true);
-      if (selectedLang === 'af') {
+      if (selectedLang === 'af' || selectedLang === 'zu') {
         try {
-          const audioContent = await api.googleTextToSpeech(text, 'af');
+          const audioContent = await api.googleTextToSpeech(text, selectedLang);
           await api.playAudio(audioContent);
           setIsSpeaking(false);
         } catch (ttsError) {
           console.error('Google TTS error:', ttsError);
           // Fallback to Web Speech API
           const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = selectedLang;
+          utterance.lang = selectedLang === 'zu' ? 'zu-ZA' : selectedLang;
           utterance.rate = 0.9;
           utterance.pitch = 1;
           utterance.onend = () => setIsSpeaking(false);
@@ -361,6 +439,8 @@ General rules:
       speakFeedback(
         selectedLang === 'af'
           ? 'Daar was \'n fout. ' + errorMsg
+          : selectedLang === 'zu'
+          ? 'Kube khona iphutha. ' + errorMsg
           : 'There was an error. ' + errorMsg
       );
     } finally {
@@ -377,10 +457,10 @@ General rules:
     } else {
       setIsSpeaking(true);
 
-      // Use Google TTS for Afrikaans, Web Speech API for English
-      if (selectedLang === 'af') {
+      // Use Google TTS for Afrikaans and Zulu, Web Speech API for English
+      if (selectedLang === 'af' || selectedLang === 'zu') {
         try {
-          const audioContent = await api.googleTextToSpeech(analysisResult, 'af');
+          const audioContent = await api.googleTextToSpeech(analysisResult, selectedLang);
           await api.playAudio(audioContent);
           setIsSpeaking(false);
         } catch (error) {
@@ -548,7 +628,7 @@ General rules:
           {analysisResult && (
             <div className="glass-card analysis-result">
               <span className="section-label">
-                {selectedLang === 'af' ? 'KI SIEN' : 'AI SEES'}
+                {selectedLang === 'af' ? 'KI SIEN' : selectedLang === 'zu' ? 'I-AI IYABONA' : 'AI SEES'}
               </span>
               <p>{analysisResult}</p>
               <div className="response-actions">
@@ -559,11 +639,11 @@ General rules:
                   {isSpeaking ? (
                     <>
                       <span>⏸</span>{' '}
-                      {selectedLang === 'af' ? 'Besig om te praat...' : 'Speaking...'}
+                      {selectedLang === 'af' ? 'Besig om te praat...' : selectedLang === 'zu' ? 'Iyakhuluma...' : 'Speaking...'}
                     </>
                   ) : (
                     <>
-                      <span>🔊</span> {selectedLang === 'af' ? 'Lees Hardop' : 'Read Aloud'}
+                      <span>🔊</span> {selectedLang === 'af' ? 'Lees Hardop' : selectedLang === 'zu' ? 'Funda Phezulu' : 'Read Aloud'}
                     </>
                   )}
                 </button>
@@ -589,7 +669,7 @@ General rules:
                   >
                     <rect x="6" y="6" width="12" height="12" />
                   </svg>
-                  {selectedLang === 'af' ? 'Stop Kamera' : 'Stop Camera'}
+                  {selectedLang === 'af' ? 'Stop Kamera' : selectedLang === 'zu' ? 'Misa Ikhamera' : 'Stop Camera'}
                 </>
               ) : (
                 <>
@@ -661,8 +741,8 @@ General rules:
 
           {/* Keyboard Shortcuts Hint */}
           <div className="keyboard-hint">
-            <kbd>Space</kbd> = {selectedLang === 'af' ? 'Wissel opname' : 'Toggle record'} •{' '}
-            <kbd>Enter</kbd> = {selectedLang === 'af' ? 'Analiseer' : 'Analyze'}
+            <kbd>Space</kbd> = {selectedLang === 'af' ? 'Wissel opname' : selectedLang === 'zu' ? 'Guqula ukurekhoda' : 'Toggle record'} •{' '}
+            <kbd>Enter</kbd> = {selectedLang === 'af' ? 'Analiseer' : selectedLang === 'zu' ? 'Hlaziya' : 'Analyze'}
           </div>
 
           <div style={{ height: '20px' }}></div>

@@ -24,6 +24,7 @@ export const api = {
     const voiceMap: Record<string, { languageCode: string; name: string }> = {
       'af': { languageCode: 'af-ZA', name: 'af-ZA-Standard-A' },
       'en-ZA': { languageCode: 'en-ZA', name: 'en-ZA-Standard-A' },
+      'zu': { languageCode: 'zu-ZA', name: 'zu-ZA-Standard-A' },
     };
 
     const voice = voiceMap[languageCode] || voiceMap['en-ZA'];
