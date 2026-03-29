@@ -105,7 +105,7 @@ export const MedicalScreen = () => {
             <br />
             medical conditions?
           </h2>
-          <p className="sub">Gives IZWI context in case of emergencies.</p>
+          <p className="sub">Select all that apply. IZWI uses this for emergency context.</p>
 
           <div className="chip-group">
             {medicalConditionOptions.map((condition) => (
