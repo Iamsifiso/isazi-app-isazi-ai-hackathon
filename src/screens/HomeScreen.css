@@ -116,6 +116,10 @@
   background: linear-gradient(135deg, #5440b0 0%, #3a2f88 100%);
 }
 
+.home-card-sign {
+  background: linear-gradient(135deg, #b040b0 0%, #883a88 100%);
+}
+
 .home-card-icon {
   width: 52px;
   height: 52px;

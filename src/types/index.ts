@@ -40,4 +40,5 @@ export type ScreenName =
   | 'medical'
   | 'home'
   | 'speak'
-  | 'see';
+  | 'see'
+  | 'sign';
