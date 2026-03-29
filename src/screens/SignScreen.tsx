@@ -93,7 +93,7 @@ export const SignScreen = () => {
             <div className="lottie-wrapper">
               <Lottie
                 animationData={selectedPhrase.animationData}
-                loop={true}
+                loop={false}
                 autoplay={isPlaying}
                 style={{ width: '100%', height: '100%' }}
               />
