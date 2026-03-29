@@ -158,11 +158,12 @@ export const SpeakScreen = () => {
 
   const addCustomPhrase = () => {
     if (!newPhraseText.trim()) return;
+    if (selectedCategory === 'recent' || selectedCategory === 'favorites') return;
 
     const newPhrase: Phrase = {
-      id: `custom-${Date.now()}`,
+      id: `${selectedCategory}-${Date.now()}`,
       text: newPhraseText.trim(),
-      category: 'custom',
+      category: selectedCategory as PhraseCategory,
       isCustom: true,
       isFavorite: false,
     };
@@ -170,11 +171,12 @@ export const SpeakScreen = () => {
     setPhrases(prev => [...prev, newPhrase]);
     setNewPhraseText('');
     setIsAddingPhrase(false);
-    setSelectedCategory('custom');
   };
 
   const deletePhrase = (phraseId: string) => {
-    setPhrases(prev => prev.filter(p => p.id !== phraseId));
+    if (window.confirm('Are you sure you want to delete this phrase?')) {
+      setPhrases(prev => prev.filter(p => p.id !== phraseId));
+    }
   };
 
   const updatePhrase = (phraseId: string, newText: string) => {
@@ -188,6 +190,12 @@ export const SpeakScreen = () => {
     const newLang = currentLanguage === 'en-ZA' ? 'af-ZA' : 'en-ZA';
     setCurrentLanguage(newLang);
     updateUserData({ selectedLanguage: newLang });
+  };
+
+  const handleCategoryChange = (category: PhraseCategory | 'favorites' | 'recent') => {
+    setSelectedCategory(category);
+    setIsAddingPhrase(false); // Close add phrase mode when switching categories
+    setEditingPhraseId(null); // Close edit mode when switching categories
   };
 
   const getFilteredPhrases = (): Phrase[] => {
@@ -266,7 +274,7 @@ export const SpeakScreen = () => {
         <div className="category-tabs">
           <button
             className={`category-tab ${selectedCategory === 'recent' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('recent')}
+            onClick={() => handleCategoryChange('recent')}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />
@@ -276,7 +284,7 @@ export const SpeakScreen = () => {
           </button>
           <button
             className={`category-tab ${selectedCategory === 'favorites' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('favorites')}
+            onClick={() => handleCategoryChange('favorites')}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -285,31 +293,31 @@ export const SpeakScreen = () => {
           </button>
           <button
             className={`category-tab ${selectedCategory === 'emergency' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('emergency')}
+            onClick={() => handleCategoryChange('emergency')}
           >
             Emergency
           </button>
           <button
             className={`category-tab ${selectedCategory === 'medical' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('medical')}
+            onClick={() => handleCategoryChange('medical')}
           >
             Medical
           </button>
           <button
             className={`category-tab ${selectedCategory === 'social' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('social')}
+            onClick={() => handleCategoryChange('social')}
           >
             Social
           </button>
           <button
             className={`category-tab ${selectedCategory === 'shopping' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('shopping')}
+            onClick={() => handleCategoryChange('shopping')}
           >
             Shopping
           </button>
           <button
             className={`category-tab ${selectedCategory === 'custom' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('custom')}
+            onClick={() => handleCategoryChange('custom')}
           >
             Custom
           </button>
@@ -341,9 +349,7 @@ export const SpeakScreen = () => {
                     onClick={() => handleQuickSpeak(phrase.text)}
                     onContextMenu={(e) => {
                       e.preventDefault();
-                      if (phrase.isCustom) {
-                        setEditingPhraseId(phrase.id);
-                      }
+                      setEditingPhraseId(phrase.id);
                     }}
                   >
                     {phrase.text}
@@ -358,7 +364,7 @@ export const SpeakScreen = () => {
                       </svg>
                     </button>
                   )}
-                  {phrase.isCustom && (
+                  {selectedCategory !== 'recent' && selectedCategory !== 'favorites' && (
                     <button
                       className="delete-btn"
                       onClick={() => deletePhrase(phrase.id)}
@@ -374,15 +380,15 @@ export const SpeakScreen = () => {
             </div>
           ))}
 
-          {/* Add Custom Phrase Button */}
-          {selectedCategory === 'custom' && (
+          {/* Add Phrase Button - Available in all categories except Recent and Favorites */}
+          {selectedCategory !== 'recent' && selectedCategory !== 'favorites' && (
             <div className="phrase-chip-wrapper">
               {isAddingPhrase ? (
                 <div className="phrase-add-mode">
                   <input
                     type="text"
                     className="phrase-add-input"
-                    placeholder="Type new phrase..."
+                    placeholder={`Add ${selectedCategory} phrase...`}
                     value={newPhraseText}
                     onChange={(e) => setNewPhraseText(e.target.value)}
                     autoFocus
