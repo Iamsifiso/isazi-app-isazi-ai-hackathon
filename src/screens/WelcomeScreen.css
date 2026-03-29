@@ -1,0 +1,166 @@
+.welcome-screen {
+  background: var(--bg-deep);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.welcome-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at 50% 35%,
+    rgba(20, 140, 100, 0.12) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.swipe-hint {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.25);
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  gap: 6px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.swipe-hint-left {
+  left: 14px;
+  flex-direction: row;
+}
+
+.swipe-hint-right {
+  right: 14px;
+  flex-direction: row-reverse;
+}
+
+.swipe-hint svg {
+  width: 18px;
+  height: 18px;
+}
+
+.swipe-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  letter-spacing: 0.12em;
+}
+
+.welcome-orb-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.welcome-text {
+  font-family: var(--font-head);
+  text-align: center;
+  padding: 0 32px 48px;
+  position: relative;
+  z-index: 2;
+  animation: slideUp 0.8s ease-out 0.3s both;
+}
+
+.welcome-text h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.welcome-text p {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.welcome-text p strong {
+  color: var(--accent-teal);
+  font-weight: 600;
+}
+
+.page-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  animation: fadeIn 0.8s ease-out 0.5s both;
+}
+
+.page-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: var(--transition);
+}
+
+.page-dot.active {
+  width: 18px;
+  border-radius: 3px;
+  background: var(--accent-teal);
+}
+
+.select-mode-label {
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.2);
+  text-align: center;
+  text-transform: uppercase;
+  padding-bottom: 20px;
+  animation: fadeIn 1s ease-out 0.7s both;
+}
+
+.home-indicator {
+  width: 134px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .welcome-text h2 {
+    font-size: 24px;
+  }
+
+  .welcome-text p {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-text h2 {
+    font-size: 22px;
+  }
+
+  .welcome-text p {
+    font-size: 14px;
+  }
+
+  .welcome-text {
+    padding: 0 24px 36px;
+  }
+}

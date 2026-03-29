@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IZWI — Your Voice. Let Me Speak For You.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #060a12;
+    --bg-navy: #0a0f1e;
+    --bg-card: rgba(255,255,255,0.05);
+    --bg-card-border: rgba(255,255,255,0.10);
+    --accent-teal: #00c9a7;
+    --accent-teal-glow: rgba(0,201,167,0.4);
+    --accent-amber: #ffb347;
+    --accent-purple: #7c5cbf;
+    --accent-indigo: #4a3f8f;
+    --accent-red: #c0392b;
+    --accent-green: #39d353;
+    --orb-idle-1: #1a3a6e;
+    --orb-idle-2: #2e1f6e;
+    --orb-idle-3: #0d2b4a;
+    --orb-speak-1: #006d5b;
+    --orb-speak-2: #004a50;
+    --text-primary: #f0f4ff;
+    --text-secondary: rgba(240,244,255,0.55);
+    --text-accent: #00c9a7;
+    --radius-card: 22px;
+    --radius-btn: 14px;
+    --font-head: 'Sora', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --status-bar-h: 44px;
+    --transition: all 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ─── PHONE FRAME ─── */
+  .phone {
+    position: relative;
+    width: 393px;
+    height: 852px;
+    background: var(--bg-deep);
+    border-radius: 48px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08),
+      0 40px 120px rgba(0,0,0,0.9),
+      inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+
+  /* ─── SCREEN MANAGEMENT ─── */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(100%);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.23,1,0.32,1);
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .screen.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ─── STATUS BAR ─── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px 4px;
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .status-bar .icons { display: flex; gap: 5px; align-items: center; }
+  .status-icons svg { width: 16px; height: 12px; fill: var(--text-primary); }
+
+  /* ─── NAV BAR ─── */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .nav-bar .back-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s;
+  }
+  .nav-bar .back-btn:hover { background: rgba(255,255,255,0.08); }
+  .nav-bar .nav-title {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+    text-align: center;
+    margin-right: 36px;
+  }
+  .nav-bar .menu-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-left: auto;
+  }
+
+  /* ─── ORB ─── */
+  .orb-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .orb {
+    position: relative;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .orb-core {
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,
+      var(--orb-idle-1) 0%,
+      var(--orb-idle-2) 45%,
+      var(--orb-idle-3) 100%);
+    transition: background 0.8s ease;
+  }
+  .orb-ring {
+    position: absolute;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: transparent;
+    animation: orbPulse 3s ease-in-out infinite;
+  }
+  .orb-ring-1 {
+    border-color: rgba(0,100,200,0.35) rgba(80,40,180,0.25) rgba(0,100,200,0.35) rgba(80,40,180,0.25);
+    border-width: 1.5px;
+    animation-delay: 0s;
+  }
+  .orb-ring-2 {
+    border-color: rgba(0,80,170,0.2) rgba(60,30,140,0.15) rgba(0,80,170,0.2) rgba(60,30,140,0.15);
+    border-width: 1px;
+    animation-delay: 0.6s;
+  }
+  .orb-ring-3 {
+    border-color: rgba(0,60,140,0.12) transparent;
+    border-width: 1px;
+    animation-delay: 1.2s;
+  }
+  @keyframes orbPulse {
+    0%,100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.06); opacity: 1; }
+  }
+
+  .orb.speaking .orb-core {
+    background: radial-gradient(circle at 35% 35%,
+      var(--orb-speak-1) 0%,
+      var(--orb-speak-2) 50%,
+      #001a20 100%);
+  }
+  .orb.speaking .orb-ring-1 {
+    border-color: rgba(0,201,167,0.5) rgba(0,150,120,0.3) rgba(0,201,167,0.5) rgba(0,150,120,0.3);
+    animation-duration: 1.2s;
+  }
+  .orb.speaking .orb-ring-2 {
+    border-color: rgba(0,201,167,0.3) rgba(0,120,100,0.2);
+    animation-duration: 1s;
+  }
+  .orb.speaking .orb-ring-3 {
+    border-color: rgba(0,201,167,0.15) transparent;
+    animation-duration: 0.8s;
+  }
+
+  /* sizes */
+  .orb-lg .orb-core { width: 190px; height: 190px; }
+  .orb-lg .orb-ring-1 { width: 215px; height: 215px; }
+  .orb-lg .orb-ring-2 { width: 238px; height: 238px; }
+  .orb-lg .orb-ring-3 { width: 260px; height: 260px; }
+  .orb-lg { width: 265px; height: 265px; }
+
+  .orb-md .orb-core { width: 120px; height: 120px; }
+  .orb-md .orb-ring-1 { width: 138px; height: 138px; }
+  .orb-md .orb-ring-2 { width: 154px; height: 154px; }
+  .orb-md .orb-ring-3 { width: 170px; height: 170px; }
+  .orb-md { width: 175px; height: 175px; }
+
+  .orb-sm .orb-core { width: 68px; height: 68px; }
+  .orb-sm .orb-ring-1 { width: 82px; height: 82px; }
+  .orb-sm .orb-ring-2 { width: 94px; height: 94px; }
+  .orb-sm .orb-ring-3 { width: 106px; height: 106px; }
+  .orb-sm { width: 110px; height: 110px; }
+
+  /* ─── GLASS CARD ─── */
+  .glass-card {
+    background: rgba(10,18,40,0.72);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: var(--radius-card);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  /* ─── INPUT ─── */
+  .input-field {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+    padding: 13px 16px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    -webkit-appearance: none;
+  }
+  .input-field::placeholder { color: rgba(255,255,255,0.3); }
+  .input-field:focus {
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 0 3px rgba(0,201,167,0.15);
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-btn);
+    transition: var(--transition);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    letter-spacing: 0.01em;
+  }
+  .btn-teal {
+    background: var(--accent-teal);
+    color: #031a15;
+  }
+  .btn-teal:hover { background: #00dfba; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,201,167,0.35); }
+  .btn-teal:active { transform: scale(0.97); }
+
+  .btn-dark {
+    background: rgba(255,255,255,0.08);
+    color: var(--text-primary);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .btn-dark:hover { background: rgba(255,255,255,0.13); }
+
+  .btn-red {
+    background: rgba(160,30,30,0.7);
+    color: #fff;
+    border: 1px solid rgba(220,50,50,0.3);
+  }
+
+  .btn-green {
+    background: #39d353;
+    color: #0a1a0a;
+  }
+
+  .btn-gradient {
+    background: linear-gradient(135deg, #5b3ec8 0%, #3a2080 100%);
+    color: #fff;
+  }
+  .btn-gradient:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+  /* ─── CHIP ─── */
+  .chip-group { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip {
+    padding: 9px 18px;
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text-primary);
+    transition: var(--transition);
+  }
+  .chip.selected {
+    background: rgba(0,201,167,0.18);
+    border-color: var(--accent-teal);
+    color: var(--accent-teal);
+    box-shadow: 0 0 10px rgba(0,201,167,0.2);
+  }
+  .chip:hover:not(.selected) { background: rgba(255,255,255,0.12); }
+
+  /* ─── QUICK PHRASES ─── */
+  .quick-phrases { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .quick-phrases::-webkit-scrollbar { display: none; }
+  .phrase-chip {
+    white-space: nowrap;
+    padding: 8px 14px;
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-secondary);
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+  .phrase-chip:hover { background: rgba(255,255,255,0.12); color: var(--text-primary); }
+
+  /* ─── LANGUAGE TILE ─── */
+  .lang-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+  .lang-tile {
+    padding: 10px 6px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+  }
+  .lang-tile.selected {
+    background: rgba(0,201,167,0.12);
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 12px rgba(0,201,167,0.25);
+  }
+  .lang-tile .lang-name {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+  .lang-tile .lang-native {
+    font-family: var(--font-body);
+    font-size: 9.5px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* ─── MISC ─── */
+  .section-label {
+    font-family: var(--font-head);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+  .teal-border-left {
+    border-left: 3px solid var(--accent-teal);
+    padding-left: 12px;
+  }
+  .mic-btn {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: rgba(192,57,43,0.25);
+    border: 1.5px solid rgba(192,57,43,0.5);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: var(--transition);
+  }
+  .mic-btn:hover { background: rgba(192,57,43,0.4); transform: scale(1.05); }
+
+  /* ─── SWIPE ARROWS ─── */
+  .swipe-hint {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex; align-items: center;
+    color: rgba(255,255,255,0.25);
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    gap: 6px;
+    pointer-events: none;
+  }
+  .swipe-hint-left { left: 14px; flex-direction: row; }
+  .swipe-hint-right { right: 14px; flex-direction: row-reverse; }
+  .swipe-hint svg { width: 18px; height: 18px; }
+
+  /* ─── GESTURE SHORTCUTS ─── */
+  .gesture-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .gesture-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+  .gesture-text {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .gesture-text span { color: var(--accent-teal); font-weight: 600; }
+
+  /* notification banner */
+  .banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .banner-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-teal);
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(0,201,167,0.6);
+    animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ─── BACKGROUND GLOW ─── */
+  .bg-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── SCROLLABLE CONTENT ─── */
+  .scroll-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scroll-content::-webkit-scrollbar { display: none; }
+
+  /* ─── BOTTOM INDICATOR ─── */
+  .bottom-indicator {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .home-indicator {
+    width: 134px; height: 5px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+  }
+
+  /* ─── PAGE DOTS ─── */
+  .page-dots { display: flex; gap: 5px; align-items: center; justify-content: center; }
+  .page-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    transition: var(--transition);
+  }
+  .page-dot.active { width: 18px; border-radius: 3px; background: var(--accent-teal); }
+
+  /* ─── HOME CARDS ─── */
+  .home-card {
+    border-radius: 20px;
+    padding: 22px 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .home-card:hover { transform: translateY(-2px); filter: brightness(1.08); }
+  .home-card:active { transform: scale(0.98); }
+  .home-card-speak { background: linear-gradient(135deg, #00a88e 0%, #007f6d 100%); }
+  .home-card-see { background: linear-gradient(135deg, #5440b0 0%, #3a2f88 100%); }
+  .home-card-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .home-card-icon svg { width: 26px; height: 26px; }
+  .home-card-title {
+    font-family: var(--font-head);
+    font-size: 19px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .home-card-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 3px;
+  }
+
+  /* camera */
+  .camera-box {
+    border-radius: 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.09);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+    color: rgba(255,255,255,0.2);
+  }
+  .camera-box .camera-icon { font-size: 36px; }
+  .camera-box .camera-label { font-family: 'Courier New', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* === SCREEN 1: SPLASH === */
+  #screen-splash {
+    background: var(--bg-deep);
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+  #screen-splash .bg-glow-1 {
+    width: 350px; height: 350px;
+    top: 15%; left: 50%; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(30,60,180,0.18) 0%, transparent 70%);
+  }
+  #screen-splash .bg-glow-2 {
+    width: 250px; height: 250px;
+    top: 20%; left: 50%; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(100,50,200,0.12) 0%, transparent 70%);
+  }
+  .splash-orb-area { display: flex; align-items: center; justify-content: center; height: 340px; position: relative; z-index: 1; }
+  .splash-text { text-align: center; position: relative; z-index: 1; }
+  .splash-appname {
+    font-family: var(--font-head);
+    font-size: 46px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .splash-tagline {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    letter-spacing: 0.03em;
+  }
+
+  /* === SCREEN 2: WELCOME === */
+  #screen-welcome {
+    background: var(--bg-deep);
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .welcome-orb-area { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+  .welcome-text {
+    font-family: var(--font-head);
+    text-align: center;
+    padding: 0 32px 48px;
+    position: relative; z-index: 2;
+  }
+  .welcome-text h2 {
+    font-size: 26px; font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+  .welcome-text p {
+    font-size: 16px; font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+  .welcome-text p strong { color: var(--accent-teal); font-weight: 600; }
+  .select-mode-label {
+    font-family: var(--font-head);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.2);
+    text-align: center;
+    text-transform: uppercase;
+    padding-bottom: 20px;
+  }
+
+  /* === SCREEN 3: NAME === */
+  #screen-name {
+    background: var(--bg-deep);
+  }
+  .onboard-orb-bg {
+    position: absolute;
+    top: -40px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 0;
+    opacity: 0.5;
+  }
+  .onboard-content {
+    position: relative; z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 12px 20px 24px;
+  }
+  .onboard-card { padding: 28px 24px 24px; }
+  .onboard-card h2 {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+  .onboard-card .sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+  .input-row { display: flex; gap: 10px; align-items: center; }
+  .input-row .input-field { flex: 1; }
+  .voice-shortcuts { margin-top: 24px; }
+  .voice-shortcuts .section-label { margin-bottom: 10px; display: block; }
+  .shortcuts-list { display: flex; flex-direction: column; gap: 8px; }
+
+  /* === SCREEN 4: MEDICAL === */
+  #screen-medical { background: var(--bg-deep); }
+
+  /* === SCREEN 5: HOME === */
+  #screen-home { background: var(--bg-deep); }
+  .home-header {
+    padding: 16px 24px 12px;
+    position: relative; z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .home-header h1 {
+    font-family: var(--font-head);
+    font-size: 20px; font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+    flex: 1;
+    max-width: 240px;
+  }
+  .home-header-icons { display: flex; gap: 10px; }
+  .home-header-icons button {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-secondary);
+    transition: var(--transition);
+  }
+  .home-header-icons button:hover { background: rgba(255,255,255,0.12); }
+  .assistant-label { padding: 0 24px; }
+  .assistant-label .section-label { margin-bottom: 4px; display: block; }
+  .home-cards-area { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 2; }
+  .home-bottom-area { padding: 0 20px 20px; position: relative; z-index: 2; display: flex; flex-direction: column; gap: 14px; }
+  .listening-area { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 10px; }
+  .listening-area .section-label { display: block; text-align: center; }
+  .listening-orb { opacity: 0.5; }
+  .bg-glow-home {
+    position: absolute;
+    width: 300px; height: 300px;
+    bottom: -80px; left: 50%; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(60,40,140,0.2) 0%, transparent 70%);
+    filter: blur(60px);
+    z-index: 0;
+  }
+
+  /* === SCREEN 6: SPEAK === */
+  #screen-speak { background: var(--bg-deep); }
+  .speak-orb-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .speak-bottom {
+    padding: 12px 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative; z-index: 2;
+  }
+  .speak-input-row { display: flex; gap: 10px; align-items: center; }
+  .speak-input-row textarea {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+    resize: none;
+    height: 50px;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    -webkit-appearance: none;
+  }
+  .speak-input-row textarea:focus {
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 0 3px rgba(0,201,167,0.15);
+  }
+  .speak-input-row textarea::placeholder { color: rgba(255,255,255,0.3); }
+  .send-btn {
+    width: 50px; height: 50px;
+    border-radius: 14px;
+    background: var(--accent-teal);
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: var(--transition);
+  }
+  .send-btn:hover { background: #00dfba; transform: scale(1.05); }
+  .bottom-tabs {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .tab-item {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-family: var(--font-head); font-size: 10px; font-weight: 500;
+    color: var(--text-secondary); cursor: pointer; transition: color 0.2s;
+  }
+  .tab-item:hover, .tab-item.active { color: var(--accent-teal); }
+  .tab-item svg { width: 20px; height: 20px; }
+
+  /* === SCREEN 7: SEE === */
+  #screen-see { background: var(--bg-deep); }
+  .see-header { padding: 4px 20px 0; }
+  .see-header h2 {
+    font-family: var(--font-head);
+    font-size: 18px; font-weight: 700;
+    color: var(--text-primary);
+  }
+  .see-header .tagline {
+    font-size: 12px; font-style: italic;
+    color: var(--text-secondary); margin-top: 2px;
+  }
+  .see-scroll { padding: 10px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .see-card { padding: 14px 14px; }
+  .see-card .section-label { margin-bottom: 10px; display: block; }
+  .how-to-card { padding: 10px 12px 10px 14px; }
+  .how-to-card p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
+  .how-to-card p strong { color: var(--text-primary); font-weight: 600; }
+  .how-to-card p em { color: var(--accent-teal); font-style: italic; }
+  .vision-mode-badge {
+    font-family: var(--font-head);
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-teal);
+    border: 1px solid var(--accent-teal);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+  .see-actions { padding: 10px 16px 0; display: flex; flex-direction: column; gap: 8px; }
+  .see-btn-row { display: flex; gap: 8px; }
+  .see-btn-row .btn { flex: 1; height: 48px; font-size: 13px; }
+  .analyze-btn { width: 100%; height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .analyze-btn svg { width: 16px; height: 16px; }
+
+  /* Swipe touch support */
+  #screen-welcome { touch-action: pan-y; }
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 1: SPLASH                        -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="screen active" id="screen-splash">
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="splash-orb-area">
+      <div class="orb orb-lg" id="splash-orb">
+        <div class="orb-core"></div>
+        <div class="orb-ring orb-ring-1"></div>
+        <div class="orb-ring orb-ring-2"></div>
+        <div class="orb-ring orb-ring-3"></div>
+      </div>
+    </div>
+
+    <div class="splash-text">
+      <div class="splash-appname">IZWI</div>
+      <div class="splash-tagline">Your voice. Let me speak for you.</div>
+    </div>
+
+    <div class="bottom-indicator" style="margin-top: auto;">
+      <div style="width:4px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 2: WELCOME / MODE SELECT         -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="screen" id="screen-welcome">
+    <!-- Swipe hint arrows -->
+    <div class="swipe-hint swipe-hint-left" style="top:42%">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      <span style="writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:0.12em;">VOICE</span>
+    </div>
+    <div class="swipe-hint swipe-hint-right" style="top:42%">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <span style="writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:0.12em;">VISUAL</span>
+    </div>
+
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 35%, rgba(20,140,100,0.12) 0%, transparent 60%);pointer-events:none;"></div>
+
+    <div class="welcome-orb-area">
+      <div class="orb orb-lg speaking" id="welcome-orb">
+        <div class="orb-core"></div>
+        <div class="orb-ring orb-ring-1"></div>
+        <div class="orb-ring orb-ring-2"></div>
+        <div class="orb-ring orb-ring-3"></div>
+      </div>
+    </div>
+
+    <div class="welcome-text">
+      <h2>Welcome.</h2>
+      <p>Swipe <strong>right</strong> for voice-guided mode.<br>Swipe <strong>left</strong> for visual mode.</p>
+    </div>
+
+    <div class="page-dots" style="margin-bottom:12px;">
+      <div class="page-dot"></div>
+      <div class="page-dot active"></div>
+      <div class="page-dot"></div>
+    </div>
+
+    <div class="select-mode-label">SELECT INTERACTION MODE</div>
+    <div class="bottom-indicator"><div class="home-indicator"></div></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 3: ONBOARDING — NAME             -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="screen" id="screen-name">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 20%, rgba(20,80,160,0.15) 0%, transparent 55%);pointer-events:none;z-index:0;"></div>
+
+    <!-- Orb in background -->
+    <div class="onboard-orb-bg">
+      <div class="orb orb-md" style="opacity:0.55;">
+        <div class="orb-core"></div>
+        <div class="orb-ring orb-ring-1"></div>
+        <div class="orb-ring orb-ring-2"></div>
+        <div class="orb-ring orb-ring-3"></div>
+      </div>
+    </div>
+
+    <div class="status-bar" style="position:relative;z-index:10;">
+      <span>9:41</span>
+      <div class="icons">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><rect x="2" y="8" width="3" height="9" rx="1"/><rect x="7" y="5" width="3" height="12" rx="1"/><rect x="12" y="2" width="3" height="15" rx="1"/><rect x="17" y="9" width="3" height="8" rx="1" opacity=".4"/></svg>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M1 6s4-4 11-4 11 4 11 4M5 10s3-3 7-3 7 3 7 3M8 14s2-2 4-2 4 2 4 2M11 18h2" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="12" fill="none" stroke="white" stroke-width="1.5"><rect x="2" y="5" width="18" height="14" rx="2"/><path d="M22 10v4" stroke-width="2.5" stroke-linecap="round"/><rect x="4" y="7.5" width="12" height="9" rx="1" fill="white"/></svg>
+      </div>
+    </div>
+
+    <div class="nav-bar" style="position:relative;z-index:10;">
+      <div class="back-btn" onclick="goTo('screen-welcome')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div class="menu-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+    </div>
+
+    <div class="onboard-content">
+      <div class="glass-card onboard-card">
+        <h2>What is your name?</h2>
+        <p class="sub">IZWI uses this to personalize your assistive voice.</p>
+
+        <div class="input-row">
+          <input class="input-field" type="text" placeholder="Enter your name" id="name-input">
+          <button class="btn btn-teal" style="height:46px;padding:0 20px;white-space:nowrap;" onclick="goTo('screen-medical')">Next</button>
+        </div>
+
+        <div class="voice-shortcuts">
+          <span class="section-label">Voice-Guided Mode Shortcuts</span>
+          <div class="shortcuts-list">
+            <div class="gesture-item">
+              <div class="gesture-icon">→</div>
+              <div class="gesture-text">Swipe Right for <span>Next</span></div>
+            </div>
+            <div class="gesture-item">
+              <div class="gesture-icon">←</div>
+              <div class="gesture-text">Swipe Left for <span>Back</span></div>
+            </div>
+            <div class="gesture-item">
+              <div class="gesture-icon" style="font-size:12px;">✦✦</div>
+              <div class="gesture-text">Double Tap to <span>Select</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-indicator"><div class="home-indicator"></div></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 4: ONBOARDING — MEDICAL          -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="screen" id="screen-medical">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 20%, rgba(80,40,160,0.12) 0%, transparent 55%);pointer-events:none;z-index:0;"></div>
+
+    <!-- Orb background -->
+    <div class="onboard-orb-bg">
+      <div class="orb orb-md" style="opacity:0.45;">
+        <div class="orb-core"></div>
+        <div class="orb-ring orb-ring-1"></div>
+        <div class="orb-ring orb-ring-2"></div>
+        <div class="orb-ring orb-ring-3"></div>
+      </div>
+    </div>
+
+    <div class="status-bar" style="position:relative;z-index:10;">
+      <span>9:41</span>
+      <div class="icons">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><rect x="2" y="8" width="3" height="9" rx="1"/><rect x="7" y="5" width="3" height="12" rx="1"/><rect x="12" y="2" width="3" height="15" rx="1"/><rect x="17" y="9" width="3" height="8" rx="1" opacity=".4"/></svg>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M1 6s4-4 11-4 11 4 11 4M5 10s3-3 7-3 7 3 7 3M8 14s2-2 4-2 4 2 4 2M11 18h2" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="12" fill="none" stroke="white" stroke-width="1.5"><rect x="2" y="5" width="18" height="14" rx="2"/><path d="M22 10v4" stroke-width="2.5" stroke-linecap="round"/><rect x="4" y="7.5" width="12" height="9" rx="1" fill="white"/></svg>
+      </div>
+    </div>
+
+    <div class="nav-bar" style="position:relative;z-index:10;">
+      <div class="back-btn" onclick="goTo('screen-name')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div class="menu-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+    </div>
+
+    <div class="onboard-content" style="justify-content:flex-start;padding-top:0;">
+      <div class="glass-card onboard-card" style="position:relative;z-index:2;">
+        <h2>Do you have any<br>medical conditions?</h2>
+        <p class="sub">Gives IZWI context in case of emergencies.</p>
+
+        <div class="chip-group" id="medical-chips">
+          <div class="chip" onclick="toggleChip(this)">Diabetic</div>
+          <div class="chip" onclick="toggleChip(this)">High Blood Pressure</div>
+          <div class="chip" onclick="toggleChip(this)">Epilepsy</div>
+          <div class="chip" onclick="toggleChip(this)">Asthma</div>
+          <div class="chip" onclick="toggleChip(this)">Heart Condition</div>
+          <div class="chip" onclick="toggleChip(this)">Allergies</div>
+          <div class="chip" onclick="toggleChip(this)" id="other-chip">Other</div>
+        </div>
+
+        <!-- Other input (hidden) -->
+        <div id="other-input-wrap" style="display:none;margin-top:12px;">
+          <input class="input-field" type="text" placeholder="Describe your condition...">
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;margin-top:22px;">
+          <div class="mic-btn" title="Speak your conditions">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e05a4e" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3M8 22h8"/></svg>
+          </div>
+          <span class="section-label" style="flex:1;">SPEAK</span>
+          <button class="btn btn-dark" style="height:46px;padding:0 18px;margin-right:8px;" onclick="goTo('screen-name')">Back</button>
+          <button class="btn btn-teal" style="height:46px;padding:0 24px;" onclick="goHome()">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-family:var(--font-body);font-size:10px;color:rgba(255,255,255,0.18);text-align:center;padding:10px 24px;position:relative;z-index:2;">
+      Swipe right = next • Swipe left = previous • Double tap = select
+    </p>
+    <div class="bottom-indicator"><div class="home-indicator"></div></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 5: HOME                          -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="screen" id="screen-home">
+    <div class="bg-glow-home"></div>
+
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="icons">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><rect x="2" y="8" width="3" height="9" rx="1"/><rect x="7" y="5" width="3" height="12" rx="1"/><rect x="12" y="2" width="3" height="15" rx="1"/><rect x="17" y="9" width="3" height="8" rx="1" opacity=".4"/></svg>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M1 6s4-4 11-4 11 4 11 4M5 10s3-3 7-3 7 3 7 3M8 14s2-2 4-2 4 2 4 2M11 18h2" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="12" fill="none" stroke="white" stroke-width="1.5"><rect x="2" y="5" width="18" height="14" rx="2"/><path d="M22 10v4" stroke-width="2.5" stroke-linecap="round"/><rect x="4" y="7.5" width="12" height="9" rx="1" fill="white"/></svg>
+      </div>
+    </div>
+
+    <div class="home-header">
+      <h1 id="home-greeting">Hi John, how can I help you today?</h1>
+      <div class="home-header-icons">
+        <button title="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <button title="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="assistant-label">
+      <span class="section-label">ASSISTANT ACTIVE</span>
+      <div style="font-family:var(--font-head);font-size:17px;font-weight:600;color:var(--text-primary);margin-top:2px;">Choose your interaction</div>
+    </div>
+
+    <div class="home-cards-area">
+      <div class="home-card home-card-speak" onclick="goTo('screen-speak')">
+        <div class="home-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div>
+          <div class="home-card-title">I need to speak</div>
+          <div class="home-card-sub">Voice conversion</div>
+        </div>
+      </div>
+
+      <div class="home-card home-card-see" onclick="goTo('screen-see')">
+        <div class="home-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div>
+          <div class="home-card-title">I need to see</div>
+          <div class="home-card-sub">AI Scene Analysis</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-bottom-area">
+      <div class="banner">
+        <div class="banner-dot"></div>
+        <span style="font-family:var(--font-body);font-size:13px;color:var(--text-secondary);flex:1;">VisionVoice 2.0 is now active</span>
+        <span style="font-family:var(--font-head);font-size:12px;font-weight:600;color:var(--accent-teal);cursor:pointer;">Learn More</span>
+      </div>
+
+      <div class="listening-area">
+        <div class="orb orb-sm listening-orb">
+          <div class="orb-core"></div>
+          <div class="orb-ring orb-ring-1"></div>
+          <div class="orb-ring orb-ring-2"></div>
+          <div class="orb-ring orb-ring-3"></div>
+        </div>
+        <span class="section-label" style="margin-top:6px;">LISTENING FOR GESTURES</span>
+      </div>
+    </div>
+
+    <div class="bottom-indicator"><div class="home-indicator"></div></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 6: I NEED TO SPEAK               -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="screen" id="screen-speak">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 40%, rgba(0,100,80,0.12) 0%, transparent 60%);pointer-events:none;z-index:0;"></div>
+
+    <div class="status-bar" style="position:relative;z-index:10;">
+      <span>9:41</span>
+      <div class="icons">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><rect x="2" y="8" width="3" height="9" rx="1"/><rect x="7" y="5" width="3" height="12" rx="1"/><rect x="12" y="2" width="3" height="15" rx="1"/><rect x="17" y="9" width="3" height="8" rx="1" opacity=".4"/></svg>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M1 6s4-4 11-4 11 4 11 4M5 10s3-3 7-3 7 3 7 3M8 14s2-2 4-2 4 2 4 2M11 18h2" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="12" fill="none" stroke="white" stroke-width="1.5"><rect x="2" y="5" width="18" height="14" rx="2"/><path d="M22 10v4" stroke-width="2.5" stroke-linecap="round"/><rect x="4" y="7.5" width="12" height="9" rx="1" fill="white"/></svg>
+      </div>
+    </div>
+
+    <div class="nav-bar" style="position:relative;z-index:10;">
+      <div class="back-btn" onclick="goTo('screen-home')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div class="nav-title">What would you like to say?</div>
+      <div class="menu-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </div>
+    </div>
+
+    <div class="speak-orb-area" style="position:relative;z-index:1;">
+      <div class="orb orb-lg" id="speak-orb">
+        <div class="orb-core"></div>
+        <div class="orb-ring orb-ring-1"></div>
+        <div class="orb-ring orb-ring-2"></div>
+        <div class="orb-ring orb-ring-3"></div>
+      </div>
+    </div>
+
+    <div class="speak-bottom">
+      <div style="padding-left:4px;">
+        <span class="section-label">QUICK PHRASES <span style="color:rgba(255,255,255,0.15);font-weight:400;letter-spacing:0;">TYPE TO BEGIN</span></span>
+      </div>
+      <div class="quick-phrases">
+        <div class="phrase-chip" onclick="setPhrase(this)">Hello</div>
+        <div class="phrase-chip" onclick="setPhrase(this)">How are you?</div>
+        <div class="phrase-chip" onclick="setPhrase(this)">Thank you</div>
+        <div class="phrase-chip" onclick="setPhrase(this)">I need help</div>
+        <div class="phrase-chip" onclick="setPhrase(this)">Please wait</div>
+        <div class="phrase-chip" onclick="setPhrase(this)">Call someone</div>
+      </div>
+
+      <div class="speak-input-row">
+        <textarea id="speak-text" placeholder="Type your message..."></textarea>
+        <button class="send-btn" onclick="sendMessage()" title="Send">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#031a15" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="bottom-tabs" style="position:relative;z-index:2;">
+      <div class="tab-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Recent
+      </div>
+      <div class="page-dots">
+        <div class="page-dot active"></div>
+        <div class="page-dot"></div>
+        <div class="page-dot"></div>
+      </div>
+      <div class="tab-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </div>
+    </div>
+
+    <div class="bottom-indicator"><div class="home-indicator"></div></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SCREEN 7: I NEED TO SEE                 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="screen" id="screen-see">
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 70%, rgba(60,40,140,0.15) 0%, transparent 55%);pointer-events:none;z-index:0;"></div>
+
+    <div class="status-bar" style="position:relative;z-index:10;">
+      <span>9:41</span>
+      <div class="icons">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><rect x="2" y="8" width="3" height="9" rx="1"/><rect x="7" y="5" width="3" height="12" rx="1"/><rect x="12" y="2" width="3" height="15" rx="1"/><rect x="17" y="9" width="3" height="8" rx="1" opacity=".4"/></svg>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="white"><path d="M1 6s4-4 11-4 11 4 11 4M5 10s3-3 7-3 7 3 7 3M8 14s2-2 4-2 4 2 4 2M11 18h2" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="12" fill="none" stroke="white" stroke-width="1.5"><rect x="2" y="5" width="18" height="14" rx="2"/><path d="M22 10v4" stroke-width="2.5" stroke-linecap="round"/><rect x="4" y="7.5" width="12" height="9" rx="1" fill="white"/></svg>
+      </div>
+    </div>
+
+    <div class="nav-bar" style="position:relative;z-index:10;padding-bottom:4px;">
+      <div class="back-btn" onclick="goTo('screen-home')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:center;margin-right:36px;">
+        <span style="font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--text-primary);">IZWI VisionVoice</span>
+        <span class="vision-mode-badge">VISION MODE</span>
+      </div>
+    </div>
+
+    <div class="scroll-content" style="position:relative;z-index:2;">
+      <div class="see-scroll">
+
+        <!-- Tagline -->
+        <div style="padding:0 2px;">
+          <span style="font-family:var(--font-body);font-size:12px;font-style:italic;color:var(--text-secondary);">"See the world, hear its story."</span>
+        </div>
+
+        <!-- How to use -->
+        <div class="glass-card how-to-card teal-border-left">
+          <p><strong>How to use:</strong><br>
+          Tap <em>Start Camera</em> to begin, then tap <em>Record</em> to capture, then tap <em>Analyze</em> to get results.</p>
+        </div>
+
+        <!-- Language Grid -->
+        <div class="glass-card see-card">
+          <span class="section-label">LANGUAGE SELECTION</span>
+          <div class="lang-grid" id="lang-grid">
+            <div class="lang-tile selected" onclick="selectLang(this)"><div class="lang-name">English</div><div class="lang-native">SA</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">Afrikaans</div><div class="lang-native">Afr</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">isiZulu</div><div class="lang-native">Zul</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">isiXhosa</div><div class="lang-native">Xho</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">Sesotho</div><div class="lang-native">Sot</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">Setswana</div><div class="lang-native">Tsn</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">Sepedi</div><div class="lang-native">NSo</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">Tshivenḓa</div><div class="lang-native">Ven</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">Xitsonga</div><div class="lang-native">Tso</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">siSwati</div><div class="lang-native">Ssw</div></div>
+            <div class="lang-tile" onclick="selectLang(this)"><div class="lang-name">isiNdebele</div><div class="lang-native">Nbl</div></div>
+          </div>
+        </div>
+
+        <!-- Camera viewfinder -->
+        <div class="camera-box" id="camera-box" style="height:180px;">
+          <div class="camera-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <div class="camera-label">Camera not started</div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="see-btn-row">
+          <button class="btn btn-green see-btn-row" style="flex:1;height:48px;font-size:13px;border-radius:14px;gap:6px;" onclick="startCamera()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Start Camera
+          </button>
+          <button class="btn btn-red" style="flex:1;height:48px;font-size:13px;border-radius:14px;gap:6px;" id="record-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
+            Record
+          </button>
+        </div>
+
+        <button class="btn btn-gradient analyze-btn" style="border-radius:14px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Analyze My Surroundings
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+
+        <div style="height:20px;"></div>
+      </div>
+    </div>
+
+    <div class="bottom-indicator"><div class="home-indicator"></div></div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+// ─── NAVIGATION ───
+let currentScreen = 'screen-splash';
+
+function goTo(id) {
+  const from = document.getElementById(currentScreen);
+  const to = document.getElementById(id);
+  if (!to || id === currentScreen) return;
+
+  from.classList.add('exit-left');
+  from.classList.remove('active');
+
+  setTimeout(() => {
+    from.classList.remove('exit-left');
+    from.style.transform = '';
+  }, 500);
+
+  to.style.transform = 'translateX(100%)';
+  to.style.opacity = '0';
+  to.classList.add('active');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      to.style.transform = '';
+      to.style.opacity = '';
+    });
+  });
+
+  currentScreen = id;
+
+  // Update home greeting
+  if (id === 'screen-home') {
+    const name = document.getElementById('name-input')?.value?.trim();
+    if (name) document.getElementById('home-greeting').textContent = `Hi ${name}, how can I help you today?`;
+  }
+}
+
+function goHome() { goTo('screen-home'); }
+
+// ─── AUTO SPLASH ───
+setTimeout(() => { goTo('screen-welcome'); }, 3200);
+
+// ─── SWIPE on Welcome ───
+let swipeStartX = 0;
+const welcomeScreen = document.getElementById('screen-welcome');
+welcomeScreen.addEventListener('touchstart', e => { swipeStartX = e.touches[0].clientX; }, { passive: true });
+welcomeScreen.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  if (Math.abs(dx) > 40) goTo('screen-name');
+}, { passive: true });
+// Mouse swipe support for desktop
+welcomeScreen.addEventListener('mousedown', e => { swipeStartX = e.clientX; });
+welcomeScreen.addEventListener('mouseup', e => {
+  const dx = e.clientX - swipeStartX;
+  if (Math.abs(dx) > 40) goTo('screen-name');
+});
+
+// ─── CHIPS ───
+function toggleChip(el) {
+  el.classList.toggle('selected');
+  // Show/hide other input
+  if (el.id === 'other-chip') {
+    const wrap = document.getElementById('other-input-wrap');
+    wrap.style.display = el.classList.contains('selected') ? 'block' : 'none';
+  }
+}
+
+// ─── LANGUAGE TILES ───
+function selectLang(el) {
+  document.querySelectorAll('.lang-tile').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ─── QUICK PHRASES ───
+function setPhrase(el) {
+  const ta = document.getElementById('speak-text');
+  ta.value = el.textContent;
+  ta.focus();
+}
+
+// ─── SEND MESSAGE ───
+function sendMessage() {
+  const ta = document.getElementById('speak-text');
+  if (!ta.value.trim()) return;
+  const orb = document.getElementById('speak-orb');
+  orb.classList.add('speaking');
+  // Simulate TTS duration
+  setTimeout(() => { orb.classList.remove('speaking'); }, 3000);
+}
+
+// Send on Enter
+document.getElementById('speak-text')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+// ─── CAMERA ───
+function startCamera() {
+  const box = document.getElementById('camera-box');
+  box.innerHTML = `<div style="color:var(--accent-teal);font-size:11px;font-family:var(--font-head);letter-spacing:0.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent-teal);display:inline-block;animation:blink 1s infinite;"></span>Camera Active</div>`;
+}
+
+// ─── WELCOME ORB speaking pulse then idle ───
+setTimeout(() => {
+  const orb = document.getElementById('welcome-orb');
+  if (orb) { orb.classList.remove('speaking'); }
+}, 4000);
+</script>
+
+</body>
+</html>

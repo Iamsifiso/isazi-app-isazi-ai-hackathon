@@ -1,0 +1,120 @@
+.splash-screen {
+  background: var(--bg-deep);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-glow-1 {
+  width: 350px;
+  height: 350px;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(30, 60, 180, 0.18) 0%, transparent 70%);
+}
+
+.bg-glow-2 {
+  width: 250px;
+  height: 250px;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(100, 50, 200, 0.12) 0%, transparent 70%);
+}
+
+.splash-orb-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 340px;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.splash-text {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 1s ease-out 0.5s both;
+}
+
+.splash-appname {
+  font-family: var(--font-head);
+  font-size: 46px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.splash-tagline {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  letter-spacing: 0.03em;
+}
+
+.bottom-indicator {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+}
+
+.splash-dot {
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .splash-appname {
+    font-size: 38px;
+  }
+
+  .splash-tagline {
+    font-size: 14px;
+  }
+
+  .splash-orb-area {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .splash-appname {
+    font-size: 32px;
+  }
+
+  .splash-tagline {
+    font-size: 13px;
+  }
+
+  .splash-orb-area {
+    height: 260px;
+  }
+}
