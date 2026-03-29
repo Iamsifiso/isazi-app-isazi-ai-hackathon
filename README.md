@@ -20,46 +20,64 @@ A Progressive Web App (PWA) designed to assist people with hearing, speech, and 
 - **PWA** with service worker support
 - **CSS3** with glass morphism effects and animations
 
+## Architecture
+
+IZWI 3.0 is a **frontend-only PWA** that makes direct API calls from the browser:
+
+- **Vision Analysis**: Anthropic Claude API (direct browser call)
+- **Text-to-Speech**: Google Cloud TTS API (direct browser call)
+- **Speech-to-Text**: Web Speech API (browser native)
+
+No backend server required - all API keys configured via environment variables.
+
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 16+ and npm
 - Camera-enabled device (for vision features)
+- API Keys:
+  - [Anthropic API](https://console.anthropic.com/) for Claude Vision
+  - [Google Cloud TTS API](https://cloud.google.com/text-to-speech) for text-to-speech
+  - [Google Translate API](https://cloud.google.com/translate) for translations
 
 ### Installation
 
-1. **Install frontend dependencies:**
+1. **Clone the repository:**
+```bash
+git clone <repository-url>
+cd IZWI3.O
+```
+
+2. **Install dependencies:**
 ```bash
 npm install
 ```
 
-2. **Install backend dependencies:**
+3. **Configure environment variables:**
 ```bash
-cd server
-npm install
-```
-
-3. **Configure API keys:**
-Edit `server/.env` with your API keys:
-```env
-ANTHROPIC_API_KEY=your_anthropic_key
-GOOGLE_API_KEY=your_google_key
+cp .env.example .env
+# Edit .env and add your API keys:
+# VITE_ANTHROPIC_API_KEY=your_key_here
+# VITE_GOOGLE_TRANSLATE_API_KEY=your_key_here
 ```
 
 ### Running the App
 
-You need to run both frontend and backend:
-
-**Terminal 1 - Backend:**
-```bash
-cd server
-npm start
-```
-
-**Terminal 2 - Frontend:**
+**Development mode:**
 ```bash
 npm run dev
+```
+
+**Using the start script:**
+```bash
+./start.sh
+```
+
+**Production build:**
+```bash
+npm run build
+npm run preview
 ```
 
 Then open http://localhost:5173/
@@ -103,12 +121,12 @@ src/
 
 ## Future Enhancements
 
-- Google Cloud Vision API integration for advanced scene analysis
-- Google Cloud Text-to-Speech API for more natural voices
-- Speech-to-Text for voice input
+- Expanded language support for all 11 official South African languages
 - Offline support with cached responses
 - Emergency contact quick dial
 - Medical information sharing in emergencies
+- Voice command navigation
+- Saved scene descriptions history
 
 ## License
 
