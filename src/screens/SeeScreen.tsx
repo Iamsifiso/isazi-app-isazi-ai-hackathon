@@ -81,18 +81,27 @@ export const SeeScreen = () => {
     }
   };
 
-  const handleStartCamera = async () => {
-    setError('');
-    await startCamera();
-    setTimeout(() => {
-      if (cameraActive) {
-        speakFeedback(
-          selectedLang === 'af'
-            ? 'Kamera is gereed. Tik Neem op om jou omgewing vas te vang.'
-            : 'Camera is ready. Tap Record to capture your surroundings.'
-        );
-      }
-    }, 500);
+  const handleToggleCamera = async () => {
+    if (cameraActive) {
+      stopCamera();
+      speakFeedback(
+        selectedLang === 'af'
+          ? 'Kamera is gestop.'
+          : 'Camera stopped.'
+      );
+    } else {
+      setError('');
+      await startCamera();
+      setTimeout(() => {
+        if (cameraActive) {
+          speakFeedback(
+            selectedLang === 'af'
+              ? 'Kamera is gereed. Tik Neem op om jou omgewing vas te vang.'
+              : 'Camera is ready. Tap Record to capture your surroundings.'
+          );
+        }
+      }, 500);
+    }
   };
 
   const handleToggleRecording = () => {
@@ -474,22 +483,39 @@ Be specific, spatially precise, and use natural spoken language. Keep it under 1
           {/* Action buttons */}
           <div className="see-btn-row">
             <button
-              className="btn btn-green see-action-btn"
-              onClick={handleStartCamera}
-              disabled={cameraActive}
+              className={`btn see-action-btn ${cameraActive ? 'btn-red' : 'btn-green'}`}
+              onClick={handleToggleCamera}
             >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
-              {t('startCamera')}
+              {cameraActive ? (
+                <>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
+                    <rect x="6" y="6" width="12" height="12" />
+                  </svg>
+                  {selectedLang === 'af' ? 'Stop Kamera' : 'Stop Camera'}
+                </>
+              ) : (
+                <>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
+                  {t('startCamera')}
+                </>
+              )}
             </button>
             <button
               className={`btn btn-red see-action-btn ${isRecording ? 'recording' : ''}`}
