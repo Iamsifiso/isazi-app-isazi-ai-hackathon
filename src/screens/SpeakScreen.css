@@ -159,6 +159,46 @@
   height: 14px;
 }
 
+.category-tab.add-category-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-teal);
+  border-color: var(--accent-teal);
+  background: rgba(0, 201, 167, 0.1);
+}
+
+.category-tab.add-category-btn:hover {
+  background: rgba(0, 201, 167, 0.15);
+  transform: scale(1.05);
+}
+
+.add-category-mode {
+  padding: 0 8px;
+  height: 32px;
+  min-width: 150px;
+}
+
+.category-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--accent-teal);
+  border-radius: 8px;
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 6px 10px;
+  outline: none;
+}
+
+.category-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
 .quick-phrases {
   display: flex;
   flex-wrap: wrap;

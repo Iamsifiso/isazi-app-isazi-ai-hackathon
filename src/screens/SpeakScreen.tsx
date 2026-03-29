@@ -50,17 +50,21 @@ export const SpeakScreen = () => {
   const [text, setText] = useState('');
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const [recentPhrases, setRecentPhrases] = useState<RecentPhrase[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<PhraseCategory | 'favorites' | 'recent'>('social');
+  const [selectedCategory, setSelectedCategory] = useState<string>('social');
   const [isAddingPhrase, setIsAddingPhrase] = useState(false);
   const [newPhraseText, setNewPhraseText] = useState('');
   const [editingPhraseId, setEditingPhraseId] = useState<string | null>(null);
   const [currentLanguage, setCurrentLanguage] = useState(userData.selectedLanguage);
   const [isSpeakingWithTTS, setIsSpeakingWithTTS] = useState(false);
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   // Load saved phrases and recent from localStorage
   useEffect(() => {
     const savedPhrases = localStorage.getItem('izwi-phrases');
     const savedRecent = localStorage.getItem('izwi-recent-phrases');
+    const savedCustomCategories = localStorage.getItem('izwi-custom-categories');
 
     if (savedPhrases) {
       setPhrases(JSON.parse(savedPhrases));
@@ -71,6 +75,10 @@ export const SpeakScreen = () => {
 
     if (savedRecent) {
       setRecentPhrases(JSON.parse(savedRecent));
+    }
+
+    if (savedCustomCategories) {
+      setCustomCategories(JSON.parse(savedCustomCategories));
     }
   }, []);
 
@@ -87,6 +95,11 @@ export const SpeakScreen = () => {
       localStorage.setItem('izwi-recent-phrases', JSON.stringify(recentPhrases));
     }
   }, [recentPhrases]);
+
+  // Save custom categories when they change
+  useEffect(() => {
+    localStorage.setItem('izwi-custom-categories', JSON.stringify(customCategories));
+  }, [customCategories]);
 
   const handleSend = async () => {
     if (!text.trim()) return;
@@ -186,16 +199,45 @@ export const SpeakScreen = () => {
     setEditingPhraseId(null);
   };
 
+  const addCustomCategory = () => {
+    const categoryName = newCategoryName.trim().toLowerCase();
+    if (!categoryName) return;
+
+    // Check if category already exists
+    const allCategories = ['emergency', 'medical', 'social', 'shopping', 'custom', 'recent', 'favorites', ...customCategories];
+    if (allCategories.includes(categoryName)) {
+      alert('This category already exists!');
+      return;
+    }
+
+    setCustomCategories(prev => [...prev, categoryName]);
+    setNewCategoryName('');
+    setIsAddingCategory(false);
+    setSelectedCategory(categoryName);
+  };
+
+  const deleteCustomCategory = (categoryName: string) => {
+    if (window.confirm(`Delete "${categoryName}" category and all its phrases?`)) {
+      // Remove category
+      setCustomCategories(prev => prev.filter(c => c !== categoryName));
+      // Remove all phrases in this category
+      setPhrases(prev => prev.filter(p => p.category !== categoryName));
+      // Switch to social category
+      setSelectedCategory('social');
+    }
+  };
+
   const handleLanguageToggle = () => {
     const newLang = currentLanguage === 'en-ZA' ? 'af-ZA' : 'en-ZA';
     setCurrentLanguage(newLang);
     updateUserData({ selectedLanguage: newLang });
   };
 
-  const handleCategoryChange = (category: PhraseCategory | 'favorites' | 'recent') => {
+  const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     setIsAddingPhrase(false); // Close add phrase mode when switching categories
     setEditingPhraseId(null); // Close edit mode when switching categories
+    setIsAddingCategory(false); // Close add category mode when switching categories
   };
 
   const getFilteredPhrases = (): Phrase[] => {
@@ -245,7 +287,7 @@ export const SpeakScreen = () => {
         </button>
         <div className="nav-title">What would you like to say?</div>
         <button className="lang-toggle-btn" onClick={handleLanguageToggle}>
-          <span className="lang-flag">{currentLanguage === 'en-ZA' ? '🇬🇧' : '🇿🇦'}</span>
+          <span className="lang-flag">{currentLanguage === 'en-ZA' ? '🇿🇦' : '🇿🇦'}</span>
           <span className="lang-code">{currentLanguage === 'en-ZA' ? 'EN' : 'AF'}</span>
         </button>
       </div>
@@ -321,6 +363,60 @@ export const SpeakScreen = () => {
           >
             Custom
           </button>
+
+          {/* Custom Categories */}
+          {customCategories.map((category) => (
+            <button
+              key={category}
+              className={`category-tab ${selectedCategory === category ? 'active' : ''}`}
+              onClick={() => handleCategoryChange(category)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                deleteCustomCategory(category);
+              }}
+              title="Right-click to delete"
+            >
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </button>
+          ))}
+
+          {/* Add Category Button */}
+          {isAddingCategory ? (
+            <div className="category-tab add-category-mode">
+              <input
+                type="text"
+                className="category-input"
+                placeholder="Category name..."
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                autoFocus
+                onBlur={() => {
+                  if (!newCategoryName.trim()) {
+                    setIsAddingCategory(false);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    addCustomCategory();
+                  } else if (e.key === 'Escape') {
+                    setIsAddingCategory(false);
+                    setNewCategoryName('');
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <button
+              className="category-tab add-category-btn"
+              onClick={() => setIsAddingCategory(true)}
+              title="Add custom category"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Phrases */}
