@@ -14,7 +14,7 @@ interface UseCameraReturn {
   error: string | null;
 }
 
-const FRAME_INTERVAL = 700; // Capture frame every 700ms
+const FRAME_INTERVAL = 1200; // Capture frame every 1.2 seconds
 const MAX_FRAMES = 6; // Maximum 6 frames to send to API
 
 export const useCamera = (): UseCameraReturn => {
