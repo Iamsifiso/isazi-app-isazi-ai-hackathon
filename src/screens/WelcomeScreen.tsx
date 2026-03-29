@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Orb } from '../components/Orb';
 import { useApp } from '../contexts/AppContext';
 import { useSpeech } from '../hooks/useSpeech';
@@ -9,6 +9,7 @@ export const WelcomeScreen = () => {
   const { navigateToScreen, setNavigationMode } = useApp();
   const { speak, isSpeaking } = useSpeech();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -19,13 +20,19 @@ export const WelcomeScreen = () => {
   }, [speak]);
 
   const handleSwipeLeft = () => {
-    setNavigationMode('visual');
-    navigateToScreen('name');
+    setSwipeDirection('left');
+    setTimeout(() => {
+      setNavigationMode('visual');
+      navigateToScreen('name');
+    }, 400);
   };
 
   const handleSwipeRight = () => {
-    setNavigationMode('voice');
-    navigateToScreen('name');
+    setSwipeDirection('right');
+    setTimeout(() => {
+      setNavigationMode('voice');
+      navigateToScreen('name');
+    }, 400);
   };
 
   useGestures(containerRef, {
@@ -35,7 +42,10 @@ export const WelcomeScreen = () => {
   });
 
   return (
-    <div className="screen welcome-screen" ref={containerRef}>
+    <div
+      className={`screen welcome-screen ${swipeDirection ? `swiping-${swipeDirection}` : ''}`}
+      ref={containerRef}
+    >
       <div className="welcome-gradient"></div>
 
       {/* Swipe hints */}
