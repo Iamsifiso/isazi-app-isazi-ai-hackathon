@@ -4,13 +4,13 @@ import { useApp } from '../contexts/AppContext';
 import './OnboardingScreen.css';
 
 const medicalConditionOptions = [
-  'None',
   'Diabetic',
   'High Blood Pressure',
   'Epilepsy',
   'Asthma',
   'Heart Condition',
   'Allergies',
+  'None',
 ];
 
 export const MedicalScreen = () => {
@@ -137,30 +137,13 @@ export const MedicalScreen = () => {
             </div>
           )}
 
-          <div className="medical-actions">
-            <button className="mic-btn" title="Speak your conditions">
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#e05a4e"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <rect x="9" y="2" width="6" height="12" rx="3" />
-                <path d="M5 10a7 7 0 0 0 14 0M12 19v3M8 22h8" />
-              </svg>
+          <div className="action-buttons action-buttons-centered">
+            <button className="btn btn-dark" onClick={handleBack}>
+              Back
             </button>
-            <span className="section-label mic-label">SPEAK</span>
-            <div className="action-buttons">
-              <button className="btn btn-dark" onClick={handleBack}>
-                Back
-              </button>
-              <button className="btn btn-teal" onClick={handleNext}>
-                Next
-              </button>
-            </div>
+            <button className="btn btn-teal" onClick={handleNext}>
+              Next
+            </button>
           </div>
         </div>
       </div>

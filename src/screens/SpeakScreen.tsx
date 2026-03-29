@@ -3,6 +3,14 @@ import { Orb } from '../components/Orb';
 import { useApp } from '../contexts/AppContext';
 import { useSpeech } from '../hooks/useSpeech';
 import { api } from '../utils/api';
+import {
+  getStorageItem,
+  setStorageItem,
+  validatePhrases,
+  validateCategories,
+  validateRecentPhrases,
+  validatePhoneNumber,
+} from '../utils/storage';
 import './SpeakScreen.css';
 
 interface Phrase {
@@ -65,48 +73,46 @@ export const SpeakScreen = () => {
 
   // Load saved phrases and recent from localStorage
   useEffect(() => {
-    const savedPhrases = localStorage.getItem('izwi-phrases');
-    const savedRecent = localStorage.getItem('izwi-recent-phrases');
-    const savedCustomCategories = localStorage.getItem('izwi-custom-categories');
-    const savedWhatsAppContact = localStorage.getItem('izwi-emergency-whatsapp');
+    const savedPhrases = getStorageItem<Phrase[]>('izwi-phrases', []);
+    const validatedPhrases = validatePhrases(savedPhrases);
 
-    if (savedPhrases) {
-      setPhrases(JSON.parse(savedPhrases));
+    if (validatedPhrases.length > 0) {
+      setPhrases(validatedPhrases);
     } else {
       setPhrases(defaultPhrases);
-      localStorage.setItem('izwi-phrases', JSON.stringify(defaultPhrases));
+      setStorageItem('izwi-phrases', defaultPhrases);
     }
 
-    if (savedRecent) {
-      setRecentPhrases(JSON.parse(savedRecent));
-    }
+    const savedRecent = getStorageItem<RecentPhrase[]>('izwi-recent-phrases', []);
+    const validatedRecent = validateRecentPhrases(savedRecent, 20);
+    setRecentPhrases(validatedRecent);
 
-    if (savedCustomCategories) {
-      setCustomCategories(JSON.parse(savedCustomCategories));
-    }
+    const savedCustomCategories = getStorageItem<string[]>('izwi-custom-categories', []);
+    const validatedCategories = validateCategories(savedCustomCategories);
+    setCustomCategories(validatedCategories);
 
-    if (savedWhatsAppContact) {
-      setEmergencyWhatsAppContact(savedWhatsAppContact);
-    }
+    const savedWhatsAppContact = getStorageItem<string>('izwi-emergency-whatsapp', '');
+    const validatedContact = validatePhoneNumber(savedWhatsAppContact);
+    setEmergencyWhatsAppContact(validatedContact);
   }, []);
 
   // Save phrases when they change
   useEffect(() => {
     if (phrases.length > 0) {
-      localStorage.setItem('izwi-phrases', JSON.stringify(phrases));
+      setStorageItem('izwi-phrases', phrases);
     }
   }, [phrases]);
 
   // Save recent phrases when they change
   useEffect(() => {
     if (recentPhrases.length > 0) {
-      localStorage.setItem('izwi-recent-phrases', JSON.stringify(recentPhrases));
+      setStorageItem('izwi-recent-phrases', recentPhrases);
     }
   }, [recentPhrases]);
 
   // Save custom categories when they change
   useEffect(() => {
-    localStorage.setItem('izwi-custom-categories', JSON.stringify(customCategories));
+    setStorageItem('izwi-custom-categories', customCategories);
   }, [customCategories]);
 
   const handleSend = async () => {
@@ -247,9 +253,13 @@ export const SpeakScreen = () => {
   };
 
   const handleSaveWhatsAppContact = () => {
-    const cleanedNumber = tempWhatsAppContact.replace(/\D/g, '');
-    setEmergencyWhatsAppContact(cleanedNumber);
-    localStorage.setItem('izwi-emergency-whatsapp', cleanedNumber);
+    const validatedNumber = validatePhoneNumber(tempWhatsAppContact);
+    if (!validatedNumber) {
+      alert('Please enter a valid phone number (10-15 digits)');
+      return;
+    }
+    setEmergencyWhatsAppContact(validatedNumber);
+    setStorageItem('izwi-emergency-whatsapp', validatedNumber);
     setIsConfigureWhatsApp(false);
   };
 

@@ -1,0 +1,145 @@
+.error-boundary {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-deep);
+  padding: 20px;
+}
+
+.error-boundary-content {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.error-icon {
+  margin-bottom: 24px;
+  color: #ff3b30;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.error-boundary h1 {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.error-message {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.error-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--accent-teal);
+  color: #031a15;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 201, 167, 0.3);
+}
+
+.btn-primary:hover {
+  background: #00dfba;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 201, 167, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.error-details {
+  margin-top: 24px;
+  text-align: left;
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.error-details summary {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 600;
+  color: #ff3b30;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.error-stack {
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.error-stack p {
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.error-stack pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+@media (max-width: 480px) {
+  .error-boundary h1 {
+    font-size: 24px;
+  }
+
+  .error-message {
+    font-size: 14px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    font-size: 14px;
+    padding: 12px 20px;
+  }
+}

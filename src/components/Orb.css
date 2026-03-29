@@ -22,7 +22,11 @@
     var(--orb-idle-2) 45%,
     var(--orb-idle-3) 100%
   );
-  transition: background 0.8s ease;
+  box-shadow:
+    0 0 30px rgba(0, 100, 200, 0.2),
+    0 0 60px rgba(80, 40, 180, 0.15),
+    0 0 90px rgba(0, 100, 200, 0.1);
+  transition: background 0.8s ease, box-shadow 0.8s ease;
 }
 
 .orb-ring {
@@ -61,6 +65,10 @@
     var(--orb-speak-2) 50%,
     #001a20 100%
   );
+  box-shadow:
+    0 0 35px rgba(0, 201, 167, 0.25),
+    0 0 70px rgba(0, 201, 167, 0.18),
+    0 0 100px rgba(0, 201, 167, 0.12);
 }
 
 .orb.speaking .orb-ring-1 {

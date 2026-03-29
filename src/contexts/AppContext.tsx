@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { UserData, NavigationMode, ScreenName } from '../types';
+import { getStorageItem, setStorageItem } from '../utils/storage';
 
 interface AppContextType {
   userData: UserData;
@@ -28,23 +29,22 @@ export const clearAllData = () => {
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<UserData>(() => {
-    const stored = localStorage.getItem('izwi-user-data');
-    return stored ? JSON.parse(stored) : initialUserData;
+    return getStorageItem<UserData>('izwi-user-data', initialUserData);
   });
 
   const [currentScreen, setCurrentScreen] = useState<ScreenName>(() => {
-    const isOnboarded = localStorage.getItem('izwi-onboarded');
-    return isOnboarded === 'true' ? 'home' : 'splash';
+    const isOnboarded = getStorageItem<boolean>('izwi-onboarded', false);
+    return isOnboarded ? 'home' : 'splash';
   });
 
   const [isFirstTimeUser, setIsFirstTimeUser] = useState<boolean>(() => {
-    return localStorage.getItem('izwi-onboarded') !== 'true';
+    return !getStorageItem<boolean>('izwi-onboarded', false);
   });
 
   const updateUserData = (data: Partial<UserData>) => {
     setUserData((prev) => {
       const updated = { ...prev, ...data };
-      localStorage.setItem('izwi-user-data', JSON.stringify(updated));
+      setStorageItem('izwi-user-data', updated);
       return updated;
     });
   };
@@ -58,7 +58,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const completeOnboarding = () => {
-    localStorage.setItem('izwi-onboarded', 'true');
+    setStorageItem('izwi-onboarded', true);
     setIsFirstTimeUser(false);
     navigateToScreen('home');
   };

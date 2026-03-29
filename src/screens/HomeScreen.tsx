@@ -127,7 +127,7 @@ export const HomeScreen = () => {
       <div className="home-bottom-area">
         <div className="banner">
           <div className="banner-dot"></div>
-          <span className="banner-text">VisionVoice 2.0 is now active</span>
+          <span className="banner-text">IZWI VisionVoice 1.0 is now active</span>
           <span className="banner-link">Learn More</span>
         </div>
 
