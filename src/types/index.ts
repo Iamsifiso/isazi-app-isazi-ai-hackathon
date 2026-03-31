@@ -41,4 +41,5 @@ export type ScreenName =
   | 'home'
   | 'speak'
   | 'see'
-  | 'sign';
+  | 'sign'
+  | 'about';

@@ -28,5 +28,6 @@ dist-ssr
 .env.local
 .env.production
 
-# Session logs
+# Session logs and documentation
 SESSION_LOG.md
+IZWI_DOCUMENTATION.md

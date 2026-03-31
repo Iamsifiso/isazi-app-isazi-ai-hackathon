@@ -128,7 +128,9 @@ export const HomeScreen = () => {
         <div className="banner">
           <div className="banner-dot"></div>
           <span className="banner-text">IZWI VisionVoice 1.0 is now active</span>
-          <span className="banner-link">Learn More</span>
+          <button className="banner-link" onClick={() => navigateToScreen('about')}>
+            Learn More
+          </button>
         </div>
 
         <div className="listening-area">

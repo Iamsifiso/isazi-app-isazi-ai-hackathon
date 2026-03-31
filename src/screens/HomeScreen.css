@@ -195,6 +195,15 @@
   font-weight: 600;
   color: var(--accent-teal);
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: var(--transition);
+}
+
+.banner-link:hover {
+  color: #00dfba;
+  text-decoration: underline;
 }
 
 .listening-area {

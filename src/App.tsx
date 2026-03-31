@@ -7,6 +7,7 @@ import { HomeScreen } from './screens/HomeScreen';
 import { SpeakScreen } from './screens/SpeakScreen';
 import { SeeScreen } from './screens/SeeScreen';
 import { SignScreen } from './screens/SignScreen';
+import { AboutScreen } from './screens/AboutScreen';
 import './App.css';
 
 function App() {
@@ -30,6 +31,8 @@ function App() {
         return <SeeScreen />;
       case 'sign':
         return <SignScreen />;
+      case 'about':
+        return <AboutScreen />;
       default:
         return <SplashScreen />;
     }
